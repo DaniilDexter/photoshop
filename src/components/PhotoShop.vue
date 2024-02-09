@@ -2,9 +2,13 @@
   <div class="photoshop">
     <HeaderPanel @download="callback" class="header"/>
     <div class="wrapper">
-      <SidebarPanel class="sidebar"/>
-      <canvas class="drawing" ref="drawing"/>
-      <img src="@/assets/logo.png" class="source" alt="" ref="source">
+      <SidebarPanel class="sidebar" :x="this.x" :y="this.y" :res="this.resl" ref="sidebar"/>
+      <div class="drawing">
+        <canvas width="1000" height="600" ref="drawing" @mousemove="showCoordinates" @click="save"/>
+      </div>
+    </div>
+    <div class="source">
+      <img src="@/assets/sunset.jpg" class="drawing__source" alt="" ref="source">
     </div>
   </div>
 </template>
@@ -14,9 +18,6 @@ import HeaderPanel from './HeaderPanel.vue'
 import SidebarPanel from './SidebarPanel.vue'
 export default {
   name: 'PhotoShop',
-  props: {
-    msg: String
-  },
   components: {
     SidebarPanel,
     HeaderPanel
@@ -24,17 +25,30 @@ export default {
   data() {
     return {
       canvas: null,
-      source: null
+      source: null,
+      ctx: null,
+      resl: [],
+      x: 0,
+      y: 0
     }
   },
   mounted() {
-    this.canvas = this.$refs["drawing"].getContext('2d')
+    this.canvas = this.$refs["drawing"]
+    this.ctx = this.canvas.getContext('2d', { willReadFrequently: true })
     this.source = this.$refs["source"]
   },
   methods: {
     callback(){
-      this.canvas.drawImage(this.source, 0, 0)
-      console.log(this.canvas.getImageData(0,2,1,1))
+      this.ctx.drawImage(this.source, 0, 0, 1000, 600)
+    },
+    showCoordinates(e) {
+      this.x = e.offsetX;
+      this.y = e.offsetY;
+    },
+    save(){
+      console.log("click");
+      this.resl = this.ctx.getImageData(this.x, this.y, 1, 1).data
+      // this.$refs.sidebar.changecolor()
     }
   }
 }
@@ -54,5 +68,10 @@ export default {
 }
 #myCanvas {
   border: 1px solid grey;
+}
+
+.drawing{
+  height: 600px;
+  width: 1000px;
 }
 </style>
