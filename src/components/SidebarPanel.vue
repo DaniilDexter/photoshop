@@ -1,7 +1,8 @@
 <template>
   <div class="content">
-    <p>{{ x }} {{ y }}</p>
+    <p class="font">{{ x }}, {{ y }}</p>
     <div class="color" :style="string" ref="picked"></div>
+    <p class="font">{{ color }}</p>
   </div>
 </template>
   
@@ -30,6 +31,9 @@ export default {
   computed: {
     string(){
       return "background-color: rgb(" + this.res[0] + "," + this.res[1] + "," + this.res[2] + ");"
+    },
+    color(){
+      return "rgb(" + this.res[0] + "," + this.res[1] + "," + this.res[2] + ")"
     }
   }
 };
@@ -47,6 +51,9 @@ export default {
   width: 30px;
   border-radius: 15px;
   border: 1px solid #e0e1dd;
+}
+.font{
+  color: #e0e1dd;
 }
 </style>
   
