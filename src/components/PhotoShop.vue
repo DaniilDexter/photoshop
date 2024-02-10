@@ -6,7 +6,10 @@
         class="sidebar"
         :x="this.x"
         :y="this.y"
+        :height="this.height"
+        :width="this.width"
         :res="this.resl"
+        :showData="this.showData"
         ref="sidebar"
       />
       <div class="drawing">
@@ -15,11 +18,11 @@
           height="600"
           ref="drawing"
           @mousemove="showCoordinates"
-          @click="save"
+          @click="save(), changeDisplay()"
         />
       </div>
     </div>
-    <DownloadModal v-show="showModal" @show="changeModal"/>
+    <DownloadModal v-show="showModal" @show="changeModal" @download="callback" ref="modal"/>
   </div>
 </template>
 
@@ -41,7 +44,10 @@ export default {
       resl: [],
       x: 0,
       y: 0,
-      showModal: false
+      showModal: false,
+      showData: false,
+      height: 0,
+      width: 0,
     };
   },
   mounted() {
@@ -50,21 +56,22 @@ export default {
   },
   methods: {
     callback() {
-      this.ctx.drawImage(this.$refs.header.new, 0, 0, 1000, 600);
+      this.height = this.$refs.modal.result.height
+      this.width = this.$refs.modal.result.width
+      this.ctx.drawImage(this.$refs.modal.result, 0, 0, 1000, 600);
     },
     showCoordinates(e) {
       this.x = e.offsetX;
       this.y = e.offsetY;
     },
     save() {
-      console.log("click");
       this.resl = this.ctx.getImageData(this.x, this.y, 1, 1).data;
-    },
-    start() {
-      console.log("start");
     },
     changeModal() {
       this.showModal = !this.showModal
+    },
+    changeDisplay(){
+      this.showData = true
     }
   },
 };
