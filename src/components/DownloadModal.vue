@@ -7,19 +7,23 @@
       </div>
       <label>
         URL адрес:
-        <input class="input" type="text" @change="savenewUrl" v-model="url"/>
+        <input class="input" type="text" @change="savenewUrl" v-model="url" />
       </label>
-      <canvas
-          width="1000"
-          height="600"
-          style="display: none;"
-          ref="newCanvas"
-        />
       <label>
         Файл:
-        <input class="input" type="file" ref="inputFile" @change="savenewFile"/>
+        <input
+          class="input"
+          type="file"
+          ref="inputFile"
+          @change="savenewFile"
+        />
       </label>
-      <button class="button" @click="saveResult(), $emit('show'), $emit('download')">Отобразить</button>
+      <button
+        class="button"
+        @click="saveResult(), $emit('show'), $emit('download')"
+      >
+        Отобразить
+      </button>
     </div>
   </div>
 </template>
@@ -33,43 +37,38 @@ export default {
       File: null,
       url: null,
       result: null,
-      prewiev: null,
-      newCanvas: null
     };
   },
   mounted() {
     this.newCanvas = this.$refs["newCanvas"];
   },
   methods: {
-    savenewUrl(){
-      let img = this.url
-      this.prewiev = new Image
-      this.prewiev.crossorigin = "anonymous"
-      this.prewiev.src = img
-      this.newCanvas.getContext("2d", { willReadFrequently: true }).drawImage(this.prewiev, 0, 0, 1000, 600);
-      let dataUrl 
-      dataUrl = this.newCanvas.toDataURL()
-      this.Url = new Image
-      this.Url.scr = dataUrl
+    async savenewUrl() {
+      fetch(this.url)
+        .then(response => response.blob())
+        .then(blob => {
+          this.File = new Image();
+          this.File.src = URL.createObjectURL(blob);
+        });
     },
-    savenewFile(e){
-      let img = e.target.files[0]
-      this.File = new Image
-      this.File.src = URL.createObjectURL(img)
+    savenewFile(e) {
+      let img = e.target.files[0];
+      this.File = new Image();
+      this.File.src = URL.createObjectURL(img);
     },
-    saveResult(){
-      if (this.Url != null && this.File != null){
-        this.result =this.File
-      } else if (this.Url != null && this.File == null){
-        this.result = this.Url
-      } else if (this.Url == null && this.File != null){
-        this.result = this.File
+    saveResult() {
+      if (this.Url != null && this.File != null) {
+        this.result = this.File;
+      } else if (this.Url != null && this.File == null) {
+        this.result = this.Url;
+      } else if (this.Url == null && this.File != null) {
+        this.result = this.File;
       }
-      this.Url = null
-      this.url = null
-      this.$refs.inputFile.value = null
-      this.File = null
-    }
+      this.Url = null;
+      this.url = null;
+      this.$refs.inputFile.value = null;
+      this.File = null;
+    },
   },
 };
 </script>
@@ -86,7 +85,7 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.modal{
+.modal {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -97,7 +96,7 @@ export default {
   border-radius: 4px;
   border: 1px solid black;
 
-  &__header{
+  &__header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -105,11 +104,11 @@ export default {
   }
 }
 
-.header{
-  &__text{
+.header {
+  &__text {
     font-size: 20px;
   }
-  &__button{
+  &__button {
     background: none;
     border: none;
     color: red;
@@ -117,14 +116,14 @@ export default {
     cursor: pointer;
   }
 }
-.button{
+.button {
   background-color: #778da9;
   border: 1px solid #0d1b2a;
   border-radius: 10px;
   padding: 10px;
   height: fit-content;
-  }
-.input{
+}
+.input {
   height: 20px;
   border-radius: 5px;
 }

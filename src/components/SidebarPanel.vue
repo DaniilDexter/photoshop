@@ -1,13 +1,11 @@
 <template>
   <div class="content">
+    <p class="font">x: {{ x }}px, y: {{ y }}px</p>
     <template v-if="showData">
-      <p class="font font_center">x:{{ x }}, y:{{ y }}</p>
-      <div class="color" :style="string" ref="picked"></div>
-      <p class="font">{{ color }}</p>
       <p class="font">Исходные параметры изображения:</p>
       <div class="params">
-        <p class="font">Ширина: {{ width }}</p>
-        <p class="font">Высота:{{ height }}</p>
+        <p class="font">Ширина: {{ width }}px</p> 
+        <p class="font">Высота: {{ height }}px</p>
       </div>
     </template>
   </div>
@@ -22,7 +20,6 @@ export default {
     height: Number,
     width: Number,
     showData: Boolean,
-    res: Uint8ClampedArray,
   },
   data() {
     return {
@@ -30,18 +27,9 @@ export default {
     }
   },
   mounted() {
-    this.picker = this.$refs["picked"]
   },
   methods: {
   },
-  computed: {
-    string(){
-      return "background-color: rgb(" + this.res[0] + "," + this.res[1] + "," + this.res[2] + ");"
-    },
-    color(){
-      return "rgb(" + this.res[0] + "," + this.res[1] + "," + this.res[2] + ")"
-    }
-  }
 };
 </script>
   

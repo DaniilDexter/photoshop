@@ -14,8 +14,10 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Merienda&display=swap');
 
 *{
+  font-family: "Open Sans", sans-serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;

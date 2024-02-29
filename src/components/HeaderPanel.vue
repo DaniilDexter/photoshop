@@ -1,6 +1,11 @@
 <template>
   <div class="content">
-    <button class="button" @click="$emit('show')">Отобразить</button>
+    <button class="button" @click="$emit('show')">
+      <img class="button__img" src="@/assets/download-photo-svgrepo-com.svg" alt="">
+    </button>
+    <button class="button" @click="$emit('clear')">
+      <img class="button__img" src="@/assets/delete-2-svgrepo-com.svg" alt="">
+    </button>
   </div>
 </template>
   
@@ -33,8 +38,18 @@ export default {
   background-color: #778da9;
   border: 1px solid #0d1b2a;
   border-radius: 10px;
-  padding: 10px;
+  padding: 7px;
   height: fit-content;
+  margin-left: 20px;
+
+  &__img{
+    height: 35px;
+  }
+
+  &:last-child{
+    margin-left: auto;
+    margin-right: 20px;
+  }
 }
 </style>
   
