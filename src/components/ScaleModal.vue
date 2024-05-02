@@ -47,20 +47,20 @@
         <select v-model="interpol">
           <option value="nearest">Ближайшие соседи</option>
         </select>
-        <tooltip class="tooltipe" @mouseover="showTooltipe" @mouseout="showTooltipe">?</tooltip>
-        <p class="tooltipe__text" :class="{ tooltipe__text_show: isTooltipe }">Nearest Neighbor: Each pixel in the new image is assigned the value of the nearest pixel in the original image.</p>
+        <tooltip
+          class="tooltipe"
+          @mouseover="showTooltipe"
+          @mouseout="showTooltipe"
+          >?</tooltip
+        >
+        <p class="tooltipe__text" :class="{ tooltipe__text_show: isTooltipe }">
+          Nearest Neighbor: Each pixel in the new image is assigned the value of
+          the nearest pixel in the original image.
+        </p>
       </label>
       <div class="modal__container">
-        <button
-          class="button"
-          @click="getSize"
-        >
-          Получить размеры
-        </button>
-        <button
-          class="button"
-          @click="$emit('show'),$emit('resize')"
-        >
+        <button class="button" @click="getSize">Получить размеры</button>
+        <button class="button" @click="$emit('show'), $emit('resize')">
           Отобразить
         </button>
       </div>
@@ -88,17 +88,17 @@ export default {
     };
   },
   computed: {
-    resNow(){
-        return this.nowH * this.nowW / 1000000
+    resNow() {
+      return Math.round((this.nowH * this.nowW) / 10000) / 100;
     },
-    resAfter(){
-        return this.outputH * this.outputW / 1000000
-    }
+    resAfter() {
+      return Math.round((this.outputH * this.outputW) / 10000) / 100;
+    },
   },
   methods: {
     getSize() {
-        this.width = this.nowW;
-        this.height = this.nowH;
+      this.width = this.nowW;
+      this.height = this.nowH;
     },
     chooseType() {
       if (this.type === "persentage") {
@@ -115,21 +115,28 @@ export default {
         this.width = Math.round(this.height * coef);
       }
       if (this.type === "persentage") {
-        this.outputH = Math.round(this.height * this.nowH /100)
-        this.outputW = Math.round(this.width * this.nowW /100)
+        this.outputH = Math.round((this.height * this.nowH) / 100);
+        this.outputW = Math.round((this.width * this.nowW) / 100);
       } else {
-        this.outputH = this.height
-        this.outputW = this.width
+        this.outputH = this.height;
+        this.outputW = this.width;
       }
     },
     updateWidth() {
-        if (this.proprtions) {
-            let coef = this.nowW / this.nowH;
-            this.height = Math.round(this.width * coef);
-        }
+      if (this.proprtions) {
+        let coef = this.nowW / this.nowH;
+        this.height = Math.round(this.width * coef);
+      }
+      if (this.type === "persentage") {
+        this.outputH = Math.round((this.height * this.nowH) / 100);
+        this.outputW = Math.round((this.width * this.nowW) / 100);
+      } else {
+        this.outputH = this.height;
+        this.outputW = this.width;
+      }
     },
-    showTooltipe(){
-        this.isTooltipe = !this.isTooltipe
+    showTooltipe() {
+      this.isTooltipe = !this.isTooltipe;
     },
   },
 };
@@ -153,7 +160,7 @@ export default {
   justify-content: space-between;
   background-color: #e0e1dd;
   height: 40vh;
-  width: 30vw;
+  width: 35vw;
   padding: 10px;
   border-radius: 4px;
   border: 1px solid black;
@@ -192,27 +199,27 @@ export default {
   border-radius: 5px;
 }
 
-.tooltipe{
-    text-decoration: underline;
-    cursor: pointer;
-    margin-left: 10px;
+.tooltipe {
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 10px;
 
-    &__text{
-        position: absolute;
-        width: 370px;
-        padding: 20px;
-        background-color: #0d1b2a;
-        text-align: center;
-        z-index: 100;
-        border-radius: 20px;
-        color: #e0e1dd;
-        margin-top: 6px;
-        display: none;
+  &__text {
+    position: absolute;
+    width: 370px;
+    padding: 20px;
+    background-color: #0d1b2a;
+    text-align: center;
+    z-index: 100;
+    border-radius: 20px;
+    color: #e0e1dd;
+    margin-top: 6px;
+    display: none;
 
-        &_show{
-            display: block;
-        }
+    &_show {
+      display: block;
     }
+  }
 }
 </style>
       
