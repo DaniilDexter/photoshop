@@ -34,6 +34,10 @@
           />
         </label>
       </div>
+      <div class="modal__container">
+        <p>Разрешение сейчас: {{ resNow }} MPs</p>
+        <p>Разрешение после: {{ resAfter }} MPs</p>
+      </div>
       <label>
         Сохранять заданные пропорции:
         <input type="checkbox" v-model="proprtions" />
@@ -55,7 +59,7 @@
         </button>
         <button
           class="button"
-          @click="updateOutput(),$emit('show'),$emit('resize')"
+          @click="$emit('show'),$emit('resize')"
         >
           Отобразить
         </button>
@@ -83,7 +87,13 @@ export default {
       interpol: "nearest",
     };
   },
-  mounted() {
+  computed: {
+    resNow(){
+        return this.nowH * this.nowW / 1000000
+    },
+    resAfter(){
+        return this.outputH * this.outputW / 1000000
+    }
   },
   methods: {
     getSize() {
@@ -104,6 +114,13 @@ export default {
         let coef = this.nowW / this.nowH;
         this.width = Math.round(this.height * coef);
       }
+      if (this.type === "persentage") {
+        this.outputH = Math.round(this.height * this.nowH /100)
+        this.outputW = Math.round(this.width * this.nowW /100)
+      } else {
+        this.outputH = this.height
+        this.outputW = this.width
+      }
     },
     updateWidth() {
         if (this.proprtions) {
@@ -114,15 +131,6 @@ export default {
     showTooltipe(){
         this.isTooltipe = !this.isTooltipe
     },
-    updateOutput(){
-        if (this.type == "pixels"){
-            this.outputH = this.height
-            this.outputW = this.width
-        } else {
-            this.outputH = Math.round(this.height * this.nowH /100)
-            this.outputW = Math.round(this.width * this.nowW /100)
-        }
-    }
   },
 };
 </script>
@@ -130,7 +138,7 @@ export default {
 <style lang="scss" scoped>
 .modal-wrapper {
   height: 100vh;
-  width: 100vw;
+  width: calc(100vw - 17px);
   background-color: rgba(27, 38, 59, 0.9);
   position: absolute;
   left: 0;
@@ -144,7 +152,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   background-color: #e0e1dd;
-  height: 30vh;
+  height: 40vh;
   width: 30vw;
   padding: 10px;
   border-radius: 4px;

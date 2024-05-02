@@ -75,7 +75,7 @@ export default {
 <style lang="scss" scoped>
 .modal-wrapper {
   height: 100vh;
-  width: 100vw;
+  width: calc(100vw - 17px);
   background-color: rgba(27, 38, 59, 0.9);
   position: absolute;
   left: 0;
