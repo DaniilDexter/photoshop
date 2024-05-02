@@ -1,44 +1,52 @@
 <template>
   <div class="photoshop">
     <HeaderPanel
-      @show="changeModal"
+      @show="changeUploadModal"
       @clear="clear(), closeDisplay()"
+      @scale="changeScaleModal"
+      @save="saveImage"
       class="header"
       ref="header"
     />
     <div class="wrapper">
       <SidebarPanel
         class="sidebar"
+        @scale="scaleImage()"
         :x="this.x"
         :y="this.y"
         :height="this.height"
         :width="this.width"
-        :res="this.resl"
+        :resl="this.resl"
         :showData="this.showData"
         ref="sidebar"
       />
       <div class="drawing">
         <canvas
-          width="1163"
-          height="564"
+          width="1250"
+          height="640"
           ref="drawing"
           @mousemove="showCoordinates"
           @click="save()"
         />
-        <div v-if="resl != null" class="color">
-          <div class="color__img" :style="string"></div>
-          <div class="color__inf">
-            <p class="color__font">{{ color }}</p>
-            <p class="color__font">Hex: {{ HEX }}</p>
-          </div>
-        </div>
       </div>
     </div>
-    <DownloadModal
-      v-show="showModal"
-      @show="changeModal"
+    <div>
+      <p>H:{{ nowH }}</p>
+      <p>W:{{ nowW }}</p>
+    </div>
+    <UploadModal
+      v-show="showUploadModal"
+      @show="changeUploadModal"
       @download="clear(), draw(), showDisplay()"
       ref="modal"
+    />
+    <ScaleModal
+      :nowH="this.nowH"
+      :nowW="this.nowW"
+      v-show="showScaleModal"
+      @show="changeScaleModal"
+      ref="scaleModal"
+      @resize="resize"
     />
   </div>
 </template>
@@ -46,13 +54,15 @@
 <script>
 import HeaderPanel from "./HeaderPanel.vue";
 import SidebarPanel from "./SidebarPanel.vue";
-import DownloadModal from "./DownloadModal.vue";
+import UploadModal from "./UploadModal.vue";
+import ScaleModal from "./ScaleModal.vue";
 export default {
   name: "PhotoShop",
   components: {
     SidebarPanel,
     HeaderPanel,
-    DownloadModal,
+    UploadModal,
+    ScaleModal,
   },
   data() {
     return {
@@ -61,10 +71,13 @@ export default {
       resl: null,
       x: 0,
       y: 0,
-      showModal: false,
+      showUploadModal: false,
+      showScaleModal: false,
       showData: false,
       height: 0,
       width: 0,
+      nowH: null,
+      nowW: null,
     };
   },
   mounted() {
@@ -75,27 +88,49 @@ export default {
     draw() {
       this.height = this.$refs.modal.result.height;
       this.width = this.$refs.modal.result.width;
-      let scale_factor = Math.min(
-        this.canvas.width / this.width,
-        this.canvas.height / this.height
-      );
-      let newWidth = this.width * scale_factor;
-      let newHeight = this.height * scale_factor;
-      let x = this.canvas.width / 2 - newWidth / 2;
-      let y = this.canvas.height / 2 - newHeight / 2;
-      this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
+      if (
+        this.height > this.canvas.height - 100 ||
+        this.width > this.canvas.width - 100
+      ) {
+        let scale_factor = Math.min(
+          this.canvas.width / this.width,
+          this.canvas.height / this.height
+        );
+        let newWidth = this.width * scale_factor - 100;
+        let newHeight = this.height * scale_factor - 100;
+        this.nowH = Math.round(newHeight);
+        this.nowW = Math.round(newWidth);
+        let x = this.canvas.width / 2 - newWidth / 2;
+        let y = this.canvas.height / 2 - newHeight / 2;
+        this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
+      } else {
+        let x = this.canvas.width / 2 - this.height / 2;
+        let y = this.canvas.height / 2 - this.width / 2;
+        this.nowH = Math.round(this.height);
+        this.nowW = Math.round(this.width);
+        this.ctx.drawImage(
+          this.$refs.modal.result,
+          x,
+          y,
+          this.width,
+          this.height
+        );
+      }
     },
     showCoordinates(e) {
       this.x = e.offsetX;
       this.y = e.offsetY;
     },
     save() {
-      if(this.$refs.modal.result != null){
+      if (this.$refs.modal.result != null) {
         this.resl = this.ctx.getImageData(this.x, this.y, 1, 1).data;
       }
     },
-    changeModal() {
-      this.showModal = !this.showModal;
+    changeUploadModal() {
+      this.showUploadModal = !this.showUploadModal;
+    },
+    changeScaleModal() {
+      this.showScaleModal = !this.showScaleModal;
     },
     showDisplay() {
       this.showData = true;
@@ -105,69 +140,87 @@ export default {
     },
     clear() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.resl = null
+      this.resl = null;
+    },
+    saveImage() {
+      const imageDataURL = this.canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = imageDataURL;
+      link.download = "my_image.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
+    resize() {
+      let dx = this.canvas.width / 2 - this.nowW / 2;
+      let dy = this.canvas.height / 2 - this.nowH / 2;
+      const img = this.ctx.getImageData(dx, dy, this.nowW, this.nowH)
+      const originalWidth = this.nowW;
+      const originalHeight = this.nowH;
+      const newHeight = this.$refs.scaleModal.outputH
+      const newWidth = this.$refs.scaleModal.outputW
+      const scaleX = originalWidth / newWidth;
+      const scaleY = originalHeight / newHeight;
+      const newData = new Uint8ClampedArray(newWidth * newHeight * 4);
+
+      for (let y = 0; y < newHeight; y++) {
+        for (let x = 0; x < newWidth; x++) {
+          const px = Math.floor(x * scaleX);
+          const py = Math.floor(y * scaleY);
+          const index = (y * newWidth + x) * 4;
+          const originalIndex = (py * originalWidth + px) * 4;
+
+          newData[index] = img.data[originalIndex];
+          newData[index + 1] = img.data[originalIndex + 1];
+          newData[index + 2] = img.data[originalIndex + 2];
+          newData[index + 3] = img.data[originalIndex + 3];
+        }
+      }
+      let nx = this.canvas.width / 2 - newWidth / 2;
+      let ny = this.canvas.height / 2 - newHeight / 2;
+      let image = new ImageData(newData, newWidth, newHeight);
+      this.clear();
+      this.ctx.putImageData(image, nx, ny)
+      this.nowH = newHeight
+      this.nowW = newWidth
+    },
+    scaleImage() {
+      let scalePers = this.$refs.sidebar.scale / 100;
+      if (
+        this.height > this.canvas.height - 100 ||
+        this.width > this.canvas.width - 100
+      ) {
+        let scale_factor = Math.min(
+          this.canvas.width / this.width,
+          this.canvas.height / this.height
+        );
+        let newWidth = (this.width * scale_factor - 100) * scalePers;
+        let newHeight = (this.height * scale_factor - 100) * scalePers;
+        this.nowH = Math.round(newHeight);
+        this.nowW = Math.round(newWidth);
+        let x = this.canvas.width / 2 - newWidth / 2;
+        let y = this.canvas.height / 2 - newHeight / 2;
+        this.clear();
+        this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
+      } else {
+        let newWidth = this.width * scalePers;
+        let newHeight = this.height * scalePers;
+        this.nowH = Math.round(newHeight);
+        this.nowW = Math.round(newWidth);
+        let x = this.canvas.width / 2 - newHeight / 2;
+        let y = this.canvas.height / 2 - newWidth / 2;
+        this.clear();
+        this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
+      }
     },
   },
-  computed: {
-    string() {
-      return (
-        "background-color: rgb(" +
-        this.resl[0] +
-        "," +
-        this.resl[1] +
-        "," +
-        this.resl[2] +
-        ");"
-      );
-    },
-    color() {
-      return (
-        "rgb(" + this.resl[0] + ", " + this.resl[1] + ", " + this.resl[2] + ")"
-      );
-    },
-    HEX() {
-      return (
-        "#" +
-        [this.resl[0], this.resl[1], this.resl[2]]
-          .map((x) => {
-            const hex = x.toString(16);
-            return hex.length === 1 ? "0" + hex : hex;
-          })
-          .join("")
-      );
-    },
-  },
+  computed: {},
 };
 </script>
 
 <style lang="scss" scoped>
 .photoshop {
   height: 100%;
-}
-.color {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  column-gap: 20px;
-  margin-top: 10px;
-
-  &__img{
-  height: 40px;
-  width: 40px;
-  border-radius: 50%;
-  border: 1px solid #e0e1dd;
-  }
-
-  &__font{
-    color: #e0e1dd;
-  }
-
-  &__inf{
-    display: flex;
-    flex-direction: column;
-    row-gap: 10px;
-  }
 }
 .wrapper {
   display: flex;
@@ -179,8 +232,7 @@ export default {
 }
 
 .drawing {
-  height: 565.5px;
-  width: 1165px;
+  height: 642px;
   background-image: url("@/assets/1674303626_catherineasquithgallery-com-p-fon-serii-kvadratiki-foto-22.jpg");
   border: 1px solid #e0e1dd;
 }

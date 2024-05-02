@@ -1,9 +1,21 @@
 <template>
   <div class="content">
-    <button class="button" @click="$emit('show')">
+    <button class="button" @click="$emit('show')" title="Upload your image!">
       <img class="button__img" src="@/assets/download-photo-svgrepo-com.svg" alt="">
     </button>
-    <button class="button" @click="$emit('clear')">
+    <button class="button" @click="$emit('show')" title="Color picker">
+      <img class="button__img" src="@/assets/pipette.svg" alt="">
+    </button>
+    <button class="button" @click="$emit('show')" title="Grab your image">
+      <img class="button__img" src="@/assets/hand-grab.svg" alt="">
+    </button>
+    <button class="button" @click="$emit('scale')" title="Resize your image">
+      <img class="button__img" src="@/assets/scale-up.svg" alt="">
+    </button>
+    <button class="button" @click="$emit('save')" title="Save your image">
+      <img class="button__img" src="@/assets/save.svg" alt="">
+    </button>
+    <button class="button" @click="$emit('clear')" title="Clear">
       <img class="button__img" src="@/assets/delete-2-svgrepo-com.svg" alt="">
     </button>
   </div>
@@ -27,7 +39,6 @@ export default {
 .content {
   height: 80px;
   background-color: #1b263b;
-  border-bottom: 1px solid black;
   display: flex;
   flex-direction: row;
   align-items: center;

@@ -30,7 +30,7 @@
     
     <script>
 export default {
-  name: "DownloadModal",
+  name: "UploadModal",
   data() {
     return {
       Url: null,
@@ -40,13 +40,12 @@ export default {
     };
   },
   mounted() {
-    this.newCanvas = this.$refs["newCanvas"];
   },
   methods: {
     async savenewUrl() {
       fetch(this.url)
-        .then(response => response.blob())
-        .then(blob => {
+        .then((response) => response.blob())
+        .then((blob) => {
           this.File = new Image();
           this.File.src = URL.createObjectURL(blob);
         });
@@ -73,11 +72,11 @@ export default {
 };
 </script>
     
-    <style lang="scss" scoped>
+<style lang="scss" scoped>
 .modal-wrapper {
   height: 100vh;
   width: 100vw;
-  background-color: #1b263b;
+  background-color: rgba(27, 38, 59, 0.9);
   position: absolute;
   left: 0;
   top: 0;
