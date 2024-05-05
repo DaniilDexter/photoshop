@@ -30,9 +30,8 @@
         />
       </div>
     </div>
-    <div>
-      <p>H:{{ nowH }}</p>
-      <p>W:{{ nowW }}</p>
+    <div style="display: none;">
+      <canvas ref="canvasHelper"/>
     </div>
     <UploadModal
       v-show="showUploadModal"
@@ -68,6 +67,8 @@ export default {
     return {
       canvas: null,
       ctx: null,
+      canvasHelper: null,
+      ctxHelper: null,
       resl: null,
       x: 0,
       y: 0,
@@ -83,6 +84,8 @@ export default {
   mounted() {
     this.canvas = this.$refs["drawing"];
     this.ctx = this.canvas.getContext("2d", { willReadFrequently: true });
+    this.canvasHelper = this.$refs["canvasHelper"];
+    this.ctxHelper = this.canvasHelper.getContext("2d", { willReadFrequently: true });
   },
   methods: {
     draw() {
@@ -143,7 +146,10 @@ export default {
       this.resl = null;
     },
     saveImage() {
-      const imageDataURL = this.canvas.toDataURL("image/png");
+      this.canvasHelper.width = this.width
+      this.canvasHelper.height = this.height
+      this.ctxHelper.drawImage(this.$refs.modal.result, 0, 0, this.width, this.height)
+      const imageDataURL = this.canvasHelper.toDataURL("image/png");
       const link = document.createElement("a");
       link.href = imageDataURL;
       link.download = "my_image.png";
@@ -181,6 +187,8 @@ export default {
       let image = new ImageData(newData, newWidth, newHeight);
       this.clear();
       this.ctx.putImageData(image, nx, ny)
+      this.height = newHeight
+      this.width = newWidth
       this.nowH = newHeight
       this.nowW = newWidth
     },
@@ -234,6 +242,8 @@ export default {
 .drawing {
   height: 642px;
   background-image: url("@/assets/1674303626_catherineasquithgallery-com-p-fon-serii-kvadratiki-foto-22.jpg");
+  background-size: 20%;
+  background-repeat: repeat;
   border: 1px solid #e0e1dd;
 }
 </style>

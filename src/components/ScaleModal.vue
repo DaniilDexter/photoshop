@@ -35,8 +35,8 @@
         </label>
       </div>
       <div class="modal__container">
-        <p>Разрешение сейчас: {{ resNow }} MPs</p>
-        <p>Разрешение после: {{ resAfter }} MPs</p>
+        <p>Разрешение сейчас: {{ resNow }} MP</p>
+        <p>Разрешение после: {{ resAfter }} MP</p>
       </div>
       <label>
         Сохранять заданные пропорции:
@@ -47,45 +47,48 @@
         <select v-model="interpol">
           <option value="nearest">Ближайшие соседи</option>
         </select>
-        <tooltip
-          class="tooltipe"
-          @mouseover="showTooltipe"
-          @mouseout="showTooltipe"
-          >?</tooltip
-        >
-        <p class="tooltipe__text" :class="{ tooltipe__text_show: isTooltipe }">
-          Nearest Neighbor: Each pixel in the new image is assigned the value of
-          the nearest pixel in the original image.
-        </p>
+        <ToolTipe
+          text="Nearest Neighbor: Each pixel in the new image is assigned the value of the
+      nearest pixel in the original image."
+        />
       </label>
-      <div class="modal__container">
-        <button class="button" @click="getSize">Получить размеры</button>
-        <button class="button" @click="$emit('show'), $emit('resize')">
-          Отобразить
-        </button>
-      </div>
+      <button class="button" @click="$emit('show'), $emit('resize')">
+        Отобразить
+      </button>
     </div>
   </div>
 </template>
       
 <script>
+import ToolTipe from "./ToolTipe.vue";
+
 export default {
   name: "ScaleModal",
   props: {
     nowW: Number,
     nowH: Number,
   },
+  components: {
+    ToolTipe,
+  },
   data() {
     return {
       type: "pixels",
-      width: null,
-      height: null,
+      width: this.nowW,
+      height: this.nowH,
       outputH: null,
       outputW: null,
       proprtions: false,
-      isTooltipe: false,
       interpol: "nearest",
     };
+  },
+  watch: {
+    nowW: function (value) {
+      this.width = value;
+    },
+    nowH: function (value) {
+      this.height = value;
+    },
   },
   computed: {
     resNow() {
@@ -95,11 +98,11 @@ export default {
       return Math.round((this.outputH * this.outputW) / 10000) / 100;
     },
   },
+  created() {
+    this.width = this.nowW;
+    this.height = this.nowH;
+  },
   methods: {
-    getSize() {
-      this.width = this.nowW;
-      this.height = this.nowH;
-    },
     chooseType() {
       if (this.type === "persentage") {
         this.width = (this.width / this.nowW) * 100;
@@ -135,14 +138,17 @@ export default {
         this.outputW = this.width;
       }
     },
-    showTooltipe() {
-      this.isTooltipe = !this.isTooltipe;
-    },
   },
 };
 </script>
       
 <style lang="scss" scoped>
+label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 5px;
+}
 .modal-wrapper {
   height: 100vh;
   width: calc(100vw - 17px);
@@ -197,29 +203,6 @@ export default {
 .input {
   height: 20px;
   border-radius: 5px;
-}
-
-.tooltipe {
-  text-decoration: underline;
-  cursor: pointer;
-  margin-left: 10px;
-
-  &__text {
-    position: absolute;
-    width: 370px;
-    padding: 20px;
-    background-color: #0d1b2a;
-    text-align: center;
-    z-index: 100;
-    border-radius: 20px;
-    color: #e0e1dd;
-    margin-top: 6px;
-    display: none;
-
-    &_show {
-      display: block;
-    }
-  }
 }
 </style>
       
