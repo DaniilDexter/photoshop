@@ -4,7 +4,9 @@
       @show="changeUploadModal"
       @clear="clear(), closeDisplay()"
       @scale="changeScaleModal"
+      @grab="changeGrab"
       @save="saveImage"
+      :state="this.state"
       class="header"
       ref="header"
     />
@@ -25,13 +27,19 @@
           width="1250"
           height="640"
           ref="drawing"
-          @mousemove="showCoordinates"
+          @mousedown="handleMouseDown"
+          @mouseup="handleMouseUp"
+          @mousemove="handleMouseMove"
           @click="save()"
+          @mousewheel="handleMouseWheel"
         />
       </div>
     </div>
     <div style="display: none;">
       <canvas ref="canvasHelper"/>
+    </div>
+    <div>
+      W:{{ nowW }} H:{{ nowH }} dx:{{ dx }} dy:{{ dy }}
     </div>
     <UploadModal
       v-show="showUploadModal"
@@ -79,6 +87,13 @@ export default {
       width: 0,
       nowH: null,
       nowW: null,
+      dx: null,
+      dy: null,
+      isDragging: false,
+      startX: null,
+      startY: null,
+      state: '',
+      isShift: false
     };
   },
   mounted() {
@@ -86,8 +101,71 @@ export default {
     this.ctx = this.canvas.getContext("2d", { willReadFrequently: true });
     this.canvasHelper = this.$refs["canvasHelper"];
     this.ctxHelper = this.canvasHelper.getContext("2d", { willReadFrequently: true });
+    window.addEventListener("keydown", this.handlePressShiftKey);
+    window.addEventListener("keyup", this.handleUnpressShiftKey);
   },
   methods: {
+    handleMouseDown(e) {
+      this.isDragging = true
+      this.startX = e.offsetX - this.dx
+      this.startY = e.offsetY - this.dy
+    },
+    handleMouseMove(e){
+      this.x = e.offsetX;
+      this.y = e.offsetY;
+      if (this.isDragging && this.state == 'grab') {
+        this.dx = e.offsetX - this.startX
+        this.dy = e.offsetY - this.startY
+        if (this.dx + 20 > this.canvas.width){
+          this.dx = this.canvas.width - 20
+        }
+        if (this.dy + 20 > this.canvas.height){
+          this.dy = this.canvas.height - 20
+        }
+        if (this.dx + this.nowW < 20){
+          this.dx = - this.nowW + 20
+        }
+        if (this.dy + this.nowH < 20){
+          this.dy = -this.nowH + 20
+        }
+        this.moveImage()
+      }
+    },
+    changeGrab(){
+      if (this.state == 'grab'){
+        this.state = ''
+      } else {
+        this.state = 'grab'
+      }
+    },
+    handleMouseWheel(event) {
+      event.preventDefault();
+      const delta = Math.sign(event.deltaY);
+
+      if (this.isShift) {
+        this.dx -= delta * 6;
+      } else {
+        this.dy += delta * 6;
+      }
+      this.moveImage();
+    },
+    handlePressShiftKey(event) {
+      if (event.key === "Shift") {
+        this.isShift = true;
+      }
+    },
+    handleUnpressShiftKey(event) {
+      if (event.key === "Shift") {
+        this.isShift = false;
+      }
+    },
+    handleMouseUp(){
+      this.isDragging = false
+    },
+    moveImage(){
+      this.clear()
+      this.ctx.drawImage(this.$refs.modal.result, this.dx, this.dy, this.nowW, this.nowH)
+    },
     draw() {
       this.height = this.$refs.modal.result.height;
       this.width = this.$refs.modal.result.width;
@@ -105,10 +183,14 @@ export default {
         this.nowW = Math.round(newWidth);
         let x = this.canvas.width / 2 - newWidth / 2;
         let y = this.canvas.height / 2 - newHeight / 2;
+        this.dx = Math.round(x)
+        this.dy = Math.round(y)
         this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
       } else {
         let x = this.canvas.width / 2 - this.height / 2;
         let y = this.canvas.height / 2 - this.width / 2;
+        this.dx = Math.round(x)
+        this.dy = Math.round(y)
         this.nowH = Math.round(this.height);
         this.nowW = Math.round(this.width);
         this.ctx.drawImage(
@@ -119,10 +201,6 @@ export default {
           this.height
         );
       }
-    },
-    showCoordinates(e) {
-      this.x = e.offsetX;
-      this.y = e.offsetY;
     },
     save() {
       if (this.$refs.modal.result != null) {
@@ -191,6 +269,8 @@ export default {
       this.width = newWidth
       this.nowH = newHeight
       this.nowW = newWidth
+      this.dx = Math.round(nx)
+      this.dy = Math.round(ny)
     },
     scaleImage() {
       let scalePers = this.$refs.sidebar.scale / 100;
@@ -208,6 +288,8 @@ export default {
         this.nowW = Math.round(newWidth);
         let x = this.canvas.width / 2 - newWidth / 2;
         let y = this.canvas.height / 2 - newHeight / 2;
+        this.dx = Math.round(x)
+        this.dy = Math.round(y)
         this.clear();
         this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
       } else {
@@ -217,6 +299,8 @@ export default {
         this.nowW = Math.round(newWidth);
         let x = this.canvas.width / 2 - newHeight / 2;
         let y = this.canvas.height / 2 - newWidth / 2;
+        this.dx = Math.round(x)
+        this.dy = Math.round(y)
         this.clear();
         this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
       }

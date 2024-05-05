@@ -3,10 +3,10 @@
     <button class="button" @click="$emit('show')" title="Upload your image!">
       <img class="button__img" src="@/assets/download-photo-svgrepo-com.svg" alt="">
     </button>
-    <button class="button" @click="$emit('show')" title="Color picker">
+    <button class="button" :class="{ active: isPippet}" @click="$emit('show')" title="Color picker">
       <img class="button__img" src="@/assets/pipette.svg" alt="">
     </button>
-    <button class="button" @click="$emit('show')" title="Grab your image">
+    <button class="button" :class="{ active: isGrab}" @click="$emit('grab')" title="Grab your image">
       <img class="button__img" src="@/assets/hand-grab.svg" alt="">
     </button>
     <button class="button" @click="$emit('scale')" title="Resize your image">
@@ -24,6 +24,9 @@
   <script>
 export default {
   name: "HeaderPanel",
+  props: {
+    state: String,
+  },
   data() {
     return {
       new: null,
@@ -32,6 +35,22 @@ export default {
 
   methods: {
   },
+  computed:{
+    isPippet(){
+      if (this.state == 'pippet'){
+        return true
+      } else {
+        return false
+      }
+    },
+    isGrab(){
+      if (this.state == 'grab'){
+        return true
+      } else {
+        return false
+      }
+    }
+  }
 };
 </script>
   
@@ -60,6 +79,10 @@ export default {
   &:last-child{
     margin-left: auto;
     margin-right: 20px;
+  }
+
+  &.active{
+    background-color: #1b263b;
   }
 }
 </style>
