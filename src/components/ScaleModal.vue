@@ -98,10 +98,6 @@ export default {
       return Math.round((this.outputH * this.outputW) / 10000) / 100;
     },
   },
-  created() {
-    this.width = this.nowW;
-    this.height = this.nowH;
-  },
   methods: {
     chooseType() {
       if (this.type === "persentage") {

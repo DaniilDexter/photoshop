@@ -4,6 +4,7 @@
       @show="changeUploadModal"
       @clear="clear(), closeDisplay()"
       @scale="changeScaleModal"
+      @pippet="changePippet"
       @grab="changeGrab"
       @save="saveImage"
       :state="this.state"
@@ -30,17 +31,24 @@
           @mousedown="handleMouseDown"
           @mouseup="handleMouseUp"
           @mousemove="handleMouseMove"
-          @click="save()"
           @mousewheel="handleMouseWheel"
         />
       </div>
+      <PippetModal
+        @show="changePippetModal"
+        :resl="this.resl"
+        :startX="this.startX"
+        :startY="this.startY"
+        :nowW="this.nowW"
+        :nowH="this.nowH"
+        ref="pippet"
+        v-if="showPippetModal"
+      />
     </div>
-    <div style="display: none;">
-      <canvas ref="canvasHelper"/>
+    <div style="display: none">
+      <canvas ref="canvasHelper" />
     </div>
-    <div>
-      W:{{ nowW }} H:{{ nowH }} dx:{{ dx }} dy:{{ dy }}
-    </div>
+    <div>W:{{ nowW }} H:{{ nowH }} dx:{{ dx }} dy:{{ dy }}</div>
     <UploadModal
       v-show="showUploadModal"
       @show="changeUploadModal"
@@ -63,6 +71,7 @@ import HeaderPanel from "./HeaderPanel.vue";
 import SidebarPanel from "./SidebarPanel.vue";
 import UploadModal from "./UploadModal.vue";
 import ScaleModal from "./ScaleModal.vue";
+import PippetModal from "./PippetModal.vue";
 export default {
   name: "PhotoShop",
   components: {
@@ -70,6 +79,7 @@ export default {
     HeaderPanel,
     UploadModal,
     ScaleModal,
+    PippetModal,
   },
   data() {
     return {
@@ -82,6 +92,7 @@ export default {
       y: 0,
       showUploadModal: false,
       showScaleModal: false,
+      showPippetModal: false,
       showData: false,
       height: 0,
       width: 0,
@@ -92,62 +103,77 @@ export default {
       isDragging: false,
       startX: null,
       startY: null,
-      state: '',
-      isShift: false
+      state: "",
+      isShift: false,
     };
   },
   mounted() {
     this.canvas = this.$refs["drawing"];
     this.ctx = this.canvas.getContext("2d", { willReadFrequently: true });
     this.canvasHelper = this.$refs["canvasHelper"];
-    this.ctxHelper = this.canvasHelper.getContext("2d", { willReadFrequently: true });
+    this.ctxHelper = this.canvasHelper.getContext("2d", {
+      willReadFrequently: true,
+    });
     window.addEventListener("keydown", this.handlePressShiftKey);
     window.addEventListener("keyup", this.handleUnpressShiftKey);
   },
   methods: {
     handleMouseDown(e) {
-      this.isDragging = true
-      this.startX = e.offsetX - this.dx
-      this.startY = e.offsetY - this.dy
+      this.isDragging = true;
+      this.startX = e.offsetX - this.dx;
+      this.startY = e.offsetY - this.dy;
+      if (this.state == "pippet" && this.$refs.modal.result != null) {
+        this.resl = this.ctx.getImageData(this.x, this.y, 1, 1).data;
+      }
     },
-    handleMouseMove(e){
+    handleMouseMove(e) {
       this.x = e.offsetX;
       this.y = e.offsetY;
-      if (this.isDragging && this.state == 'grab') {
-        this.dx = e.offsetX - this.startX
-        this.dy = e.offsetY - this.startY
-        if (this.dx + 20 > this.canvas.width){
-          this.dx = this.canvas.width - 20
+      if (this.isDragging && this.state == "grab") {
+        this.dx = e.offsetX - this.startX;
+        this.dy = e.offsetY - this.startY;
+        if (this.dx + 20 > this.canvas.width) {
+          this.dx = this.canvas.width - 20;
         }
-        if (this.dy + 20 > this.canvas.height){
-          this.dy = this.canvas.height - 20
+        if (this.dy + 20 > this.canvas.height) {
+          this.dy = this.canvas.height - 20;
         }
-        if (this.dx + this.nowW < 20){
-          this.dx = - this.nowW + 20
+        if (this.dx + this.nowW < 20) {
+          this.dx = -this.nowW + 20;
         }
-        if (this.dy + this.nowH < 20){
-          this.dy = -this.nowH + 20
+        if (this.dy + this.nowH < 20) {
+          this.dy = -this.nowH + 20;
         }
-        this.moveImage()
+        this.moveImage();
       }
     },
-    changeGrab(){
-      if (this.state == 'grab'){
-        this.state = ''
+    changeGrab() {
+      if (this.state == "grab") {
+        this.state = "";
       } else {
-        this.state = 'grab'
+        this.state = "grab";
       }
+    },
+    changePippet() {
+      if (this.state == "pippet") {
+        this.state = "";
+      } else {
+        this.state = "pippet";
+      }
+      this.showPippetModal = !this.showPippetModal
     },
     handleMouseWheel(event) {
-      event.preventDefault();
-      const delta = Math.sign(event.deltaY);
+      if (this.state != "pippet") {
+        event.preventDefault();
+        const delta = Math.sign(event.deltaY);
 
-      if (this.isShift) {
-        this.dx -= delta * 6;
-      } else {
-        this.dy += delta * 6;
+        if (this.isShift) {
+          this.dx -= delta * 6;
+        } else {
+          this.dy += delta * 6;
+        }
+        this.moveImage();
       }
-      this.moveImage();
     },
     handlePressShiftKey(event) {
       if (event.key === "Shift") {
@@ -159,12 +185,18 @@ export default {
         this.isShift = false;
       }
     },
-    handleMouseUp(){
-      this.isDragging = false
+    handleMouseUp() {
+      this.isDragging = false;
     },
-    moveImage(){
-      this.clear()
-      this.ctx.drawImage(this.$refs.modal.result, this.dx, this.dy, this.nowW, this.nowH)
+    moveImage() {
+      this.clear();
+      this.ctx.drawImage(
+        this.$refs.modal.result,
+        this.dx,
+        this.dy,
+        this.nowW,
+        this.nowH
+      );
     },
     draw() {
       this.height = this.$refs.modal.result.height;
@@ -183,14 +215,14 @@ export default {
         this.nowW = Math.round(newWidth);
         let x = this.canvas.width / 2 - newWidth / 2;
         let y = this.canvas.height / 2 - newHeight / 2;
-        this.dx = Math.round(x)
-        this.dy = Math.round(y)
+        this.dx = Math.round(x);
+        this.dy = Math.round(y);
         this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
       } else {
         let x = this.canvas.width / 2 - this.height / 2;
         let y = this.canvas.height / 2 - this.width / 2;
-        this.dx = Math.round(x)
-        this.dy = Math.round(y)
+        this.dx = Math.round(x);
+        this.dy = Math.round(y);
         this.nowH = Math.round(this.height);
         this.nowW = Math.round(this.width);
         this.ctx.drawImage(
@@ -202,16 +234,19 @@ export default {
         );
       }
     },
-    save() {
-      if (this.$refs.modal.result != null) {
-        this.resl = this.ctx.getImageData(this.x, this.y, 1, 1).data;
-      }
-    },
     changeUploadModal() {
       this.showUploadModal = !this.showUploadModal;
     },
     changeScaleModal() {
       this.showScaleModal = !this.showScaleModal;
+    },
+    changePippetModal() {
+      if (this.state == "pippet") {
+        this.state = "";
+      } else {
+        this.state = "pippet";
+      }
+      this.showPippetModal = !this.showPippetModal;
     },
     showDisplay() {
       this.showData = true;
@@ -224,9 +259,15 @@ export default {
       this.resl = null;
     },
     saveImage() {
-      this.canvasHelper.width = this.width
-      this.canvasHelper.height = this.height
-      this.ctxHelper.drawImage(this.$refs.modal.result, 0, 0, this.width, this.height)
+      this.canvasHelper.width = this.width;
+      this.canvasHelper.height = this.height;
+      this.ctxHelper.drawImage(
+        this.$refs.modal.result,
+        0,
+        0,
+        this.width,
+        this.height
+      );
       const imageDataURL = this.canvasHelper.toDataURL("image/png");
       const link = document.createElement("a");
       link.href = imageDataURL;
@@ -238,11 +279,11 @@ export default {
     resize() {
       let dx = this.canvas.width / 2 - this.nowW / 2;
       let dy = this.canvas.height / 2 - this.nowH / 2;
-      const img = this.ctx.getImageData(dx, dy, this.nowW, this.nowH)
+      const img = this.ctx.getImageData(dx, dy, this.nowW, this.nowH);
       const originalWidth = this.nowW;
       const originalHeight = this.nowH;
-      const newHeight = this.$refs.scaleModal.outputH
-      const newWidth = this.$refs.scaleModal.outputW
+      const newHeight = this.$refs.scaleModal.outputH;
+      const newWidth = this.$refs.scaleModal.outputW;
       const scaleX = originalWidth / newWidth;
       const scaleY = originalHeight / newHeight;
       const newData = new Uint8ClampedArray(newWidth * newHeight * 4);
@@ -264,13 +305,13 @@ export default {
       let ny = this.canvas.height / 2 - newHeight / 2;
       let image = new ImageData(newData, newWidth, newHeight);
       this.clear();
-      this.ctx.putImageData(image, nx, ny)
-      this.height = newHeight
-      this.width = newWidth
-      this.nowH = newHeight
-      this.nowW = newWidth
-      this.dx = Math.round(nx)
-      this.dy = Math.round(ny)
+      this.ctx.putImageData(image, nx, ny);
+      this.height = newHeight;
+      this.width = newWidth;
+      this.nowH = newHeight;
+      this.nowW = newWidth;
+      this.dx = Math.round(nx);
+      this.dy = Math.round(ny);
     },
     scaleImage() {
       let scalePers = this.$refs.sidebar.scale / 100;
@@ -288,8 +329,8 @@ export default {
         this.nowW = Math.round(newWidth);
         let x = this.canvas.width / 2 - newWidth / 2;
         let y = this.canvas.height / 2 - newHeight / 2;
-        this.dx = Math.round(x)
-        this.dy = Math.round(y)
+        this.dx = Math.round(x);
+        this.dy = Math.round(y);
         this.clear();
         this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
       } else {
@@ -299,8 +340,8 @@ export default {
         this.nowW = Math.round(newWidth);
         let x = this.canvas.width / 2 - newHeight / 2;
         let y = this.canvas.height / 2 - newWidth / 2;
-        this.dx = Math.round(x)
-        this.dy = Math.round(y)
+        this.dx = Math.round(x);
+        this.dy = Math.round(y);
         this.clear();
         this.ctx.drawImage(this.$refs.modal.result, x, y, newWidth, newHeight);
       }
@@ -315,6 +356,7 @@ export default {
   height: 100%;
 }
 .wrapper {
+  position: relative;
   display: flex;
   flex-direction: row;
   height: calc(100% - 80px);
