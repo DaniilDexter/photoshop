@@ -6,8 +6,11 @@
       @scale="changeScaleModal"
       @pippet="changePippet"
       @grab="changeGrab"
+      @curve="changeCurves"
+      @filtering="changeFiltering"
       @save="saveImage"
       :state="this.state"
+      :startImage="this.startImage"
       class="header"
       ref="header"
     />
@@ -16,6 +19,7 @@
         class="sidebar"
         @scale="scaleImage()"
         :x="this.x"
+        :state="this.state"
         :y="this.y"
         :height="this.height"
         :width="this.width"
@@ -35,7 +39,7 @@
         />
       </div>
       <PippetModal
-        @show="changePippetModal"
+        @show="changePippet"
         :resl="this.resl"
         :startX="this.startX"
         :startY="this.startY"
@@ -44,8 +48,21 @@
         ref="pippet"
         v-if="showPippetModal"
       />
+      <CurvesModal
+        @show="changeCurves"
+        @apply="changeCurves(), updateImage()"
+        :ctxRef="this.ctx"
+        :dx="this.dx"
+        :dy="this.dy"
+        :nowW="this.nowW"
+        :nowH="this.nowH"
+        :startImage="this.startImage"
+        :showCurvesModal="this.showCurvesModal"
+        ref="curves"
+        v-show="showCurvesModal"
+      />
     </div>
-    <div style="display: none">
+    <div style="display: block">
       <canvas ref="canvasHelper" />
     </div>
     <div>W:{{ nowW }} H:{{ nowH }} dx:{{ dx }} dy:{{ dy }}</div>
@@ -72,6 +89,7 @@ import SidebarPanel from "./SidebarPanel.vue";
 import UploadModal from "./UploadModal.vue";
 import ScaleModal from "./ScaleModal.vue";
 import PippetModal from "./PippetModal.vue";
+import CurvesModal from "./CurvesModal.vue";
 export default {
   name: "PhotoShop",
   components: {
@@ -80,9 +98,11 @@ export default {
     UploadModal,
     ScaleModal,
     PippetModal,
+    CurvesModal,
   },
   data() {
     return {
+      startImage: null,
       canvas: null,
       ctx: null,
       canvasHelper: null,
@@ -93,6 +113,8 @@ export default {
       showUploadModal: false,
       showScaleModal: false,
       showPippetModal: false,
+      showCurvesModal: false,
+      showFilterModal:false,
       showData: false,
       height: 0,
       width: 0,
@@ -153,6 +175,9 @@ export default {
       } else {
         this.state = "grab";
       }
+      this.showPippetModal = false;
+      this.showCurvesModal = false;
+      this.showFilterModal = false;
     },
     changePippet() {
       if (this.state == "pippet") {
@@ -160,10 +185,32 @@ export default {
       } else {
         this.state = "pippet";
       }
-      this.showPippetModal = !this.showPippetModal
+      this.showPippetModal = !this.showPippetModal;
+      this.showCurvesModal = false;
+      this.showFilterModal = false;
+    },
+    changeCurves() {
+      if (this.state == "curves") {
+        this.state = "";
+      } else {
+        this.state = "curves";
+      }
+      this.showCurvesModal = !this.showCurvesModal;
+      this.showPippetModal = false;
+      this.showFilterModal = false;
+    },
+    changeFiltering() {
+      if (this.state == "filter") {
+        this.state = "";
+      } else {
+        this.state = "filter";
+      }
+      this.showPippetModal = false;
+      this.showCurvesModal = false;
+      this.showFilterModal = !this.showFilterModal;
     },
     handleMouseWheel(event) {
-      if (this.state != "pippet") {
+      if (this.state != "pippet" && this.startImage != null && this.state != "curves" && this.state != "filter") {
         event.preventDefault();
         const delta = Math.sign(event.deltaY);
 
@@ -199,6 +246,7 @@ export default {
       );
     },
     draw() {
+      this.startImage = this.$refs.modal.result
       this.height = this.$refs.modal.result.height;
       this.width = this.$refs.modal.result.width;
       if (
@@ -240,13 +288,14 @@ export default {
     changeScaleModal() {
       this.showScaleModal = !this.showScaleModal;
     },
-    changePippetModal() {
-      if (this.state == "pippet") {
-        this.state = "";
-      } else {
-        this.state = "pippet";
-      }
-      this.showPippetModal = !this.showPippetModal;
+    updateImage(){
+      let newImage =this.ctx.getImageData(this.dx, this.dy, this.nowW, this.nowH)
+      this.canvasHelper.width=this.nowW
+      this.canvasHelper.height = this.nowH
+      this.ctxHelper.putImageData(newImage, 0, 0)
+      let image = new Image()
+      image.src = this.canvasHelper.toDataURL()
+      this.$refs.modal.result = image
     },
     showDisplay() {
       this.showData = true;

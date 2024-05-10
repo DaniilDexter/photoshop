@@ -7,7 +7,7 @@
         <p class="font">Ширина: {{ width }}px</p> 
         <p class="font">Высота: {{ height }}px</p>
       </div>
-      <select v-model="scale" @change="$emit('scale')">
+      <select :disabled="state!=''" v-model="scale" @change="$emit('scale')">
         <option value="12">12%</option>
         <option value="25">25%</option>
         <option value="50">50%</option>
@@ -37,6 +37,7 @@ export default {
     width: Number,
     showData: Boolean,
     resl: Array,
+    state: String
   },
   data() {
     return {

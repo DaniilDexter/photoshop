@@ -3,19 +3,25 @@
     <button class="button" @click="$emit('show')" title="Upload your image!">
       <img class="button__img" src="@/assets/download-photo-svgrepo-com.svg" alt="">
     </button>
-    <button class="button" :class="{ active: isPippet}" @click="$emit('pippet')" title="Color picker">
+    <button class="button" :disabled="!startImage" :class="{ active: isPippet}" @click="$emit('pippet')" title="Color picker">
       <img class="button__img" src="@/assets/pipette.svg" alt="">
     </button>
-    <button class="button" :class="{ active: isGrab}" @click="$emit('grab')" title="Grab your image">
+    <button class="button" :disabled="!startImage" :class="{ active: isGrab}" @click="$emit('grab')" title="Grab your image">
       <img class="button__img" src="@/assets/hand-grab.svg" alt="">
     </button>
-    <button class="button" @click="$emit('scale')" title="Resize your image">
+    <button class="button" :disabled="!startImage" @click="$emit('scale')" title="Resize your image">
       <img class="button__img" src="@/assets/scale-up.svg" alt="">
     </button>
-    <button class="button" @click="$emit('save')" title="Save your image">
+    <button class="button" :disabled="!startImage" :class="{ active: isCurves}" @click="$emit('curve')" title="Save your image">
+      <img class="button__img" src="@/assets/curve.svg" alt="">
+    </button>
+    <button class="button" :disabled="!startImage" :class="{ active: isFiltering}" @click="$emit('filtering')" title="Save your image">
+      <img class="button__img" src="@/assets/filtering.svg" alt="">
+    </button>
+    <button class="button" :disabled="!startImage" @click="$emit('save')" title="Save your image">
       <img class="button__img" src="@/assets/save.svg" alt="">
     </button>
-    <button class="button" @click="$emit('clear')" title="Clear">
+    <button class="button" :disabled="!startImage" @click="$emit('clear')" title="Clear">
       <img class="button__img" src="@/assets/delete-2-svgrepo-com.svg" alt="">
     </button>
   </div>
@@ -26,6 +32,7 @@ export default {
   name: "HeaderPanel",
   props: {
     state: String,
+    startImage: Object,
   },
   data() {
     return {
@@ -45,6 +52,20 @@ export default {
     },
     isGrab(){
       if (this.state == 'grab'){
+        return true
+      } else {
+        return false
+      }
+    },
+    isCurves(){
+      if (this.state == 'curves'){
+        return true
+      } else {
+        return false
+      }
+    },
+    isFiltering(){
+      if (this.state == 'filter'){
         return true
       } else {
         return false
@@ -79,6 +100,10 @@ export default {
   &:last-child{
     margin-left: auto;
     margin-right: 20px;
+  }
+
+  &:disabled{
+    background-color: #212a39;
   }
 
   &.active{
