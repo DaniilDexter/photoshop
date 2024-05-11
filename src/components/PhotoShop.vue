@@ -2,7 +2,7 @@
   <div class="photoshop">
     <HeaderPanel
       @show="changeUploadModal"
-      @clear="clear(), closeDisplay()"
+      @clear="clear(), closeDisplay(), updateCanvas()"
       @scale="changeScaleModal"
       @pippet="changePippet"
       @grab="changeGrab"
@@ -61,6 +61,18 @@
         ref="curves"
         v-show="showCurvesModal"
       />
+      <FilteringModal
+        @show="changeFiltering"
+        @apply="changeFiltering(), updateImage()"
+        :ctxRef="this.ctx"
+        :dx="this.dx"
+        :dy="this.dy"
+        :nowW="this.nowW"
+        :nowH="this.nowH"
+        :startImage="this.startImage"
+        ref="Filtering"
+        v-if="showFilterModal"
+      />
     </div>
     <div style="display: block">
       <canvas ref="canvasHelper" />
@@ -90,6 +102,7 @@ import UploadModal from "./UploadModal.vue";
 import ScaleModal from "./ScaleModal.vue";
 import PippetModal from "./PippetModal.vue";
 import CurvesModal from "./CurvesModal.vue";
+import FilteringModal from "./FilteringModal.vue";
 export default {
   name: "PhotoShop",
   components: {
@@ -99,6 +112,7 @@ export default {
     ScaleModal,
     PippetModal,
     CurvesModal,
+    FilteringModal,
   },
   data() {
     return {
@@ -114,7 +128,7 @@ export default {
       showScaleModal: false,
       showPippetModal: false,
       showCurvesModal: false,
-      showFilterModal:false,
+      showFilterModal: false,
       showData: false,
       height: 0,
       width: 0,
@@ -140,6 +154,10 @@ export default {
     window.addEventListener("keyup", this.handleUnpressShiftKey);
   },
   methods: {
+    updateCanvas(){
+      this.$refs.modal.result = null;
+      this.startImage = null;
+    },
     handleMouseDown(e) {
       this.isDragging = true;
       this.startX = e.offsetX - this.dx;
@@ -210,7 +228,12 @@ export default {
       this.showFilterModal = !this.showFilterModal;
     },
     handleMouseWheel(event) {
-      if (this.state != "pippet" && this.startImage != null && this.state != "curves" && this.state != "filter") {
+      if (
+        this.state != "pippet" &&
+        this.startImage != null &&
+        this.state != "curves" &&
+        this.state != "filter"
+      ) {
         event.preventDefault();
         const delta = Math.sign(event.deltaY);
 
@@ -246,7 +269,7 @@ export default {
       );
     },
     draw() {
-      this.startImage = this.$refs.modal.result
+      this.startImage = this.$refs.modal.result;
       this.height = this.$refs.modal.result.height;
       this.width = this.$refs.modal.result.width;
       if (
@@ -288,14 +311,20 @@ export default {
     changeScaleModal() {
       this.showScaleModal = !this.showScaleModal;
     },
-    updateImage(){
-      let newImage =this.ctx.getImageData(this.dx, this.dy, this.nowW, this.nowH)
-      this.canvasHelper.width=this.nowW
-      this.canvasHelper.height = this.nowH
-      this.ctxHelper.putImageData(newImage, 0, 0)
-      let image = new Image()
-      image.src = this.canvasHelper.toDataURL()
-      this.$refs.modal.result = image
+    updateImage() {
+      let newImage = this.ctx.getImageData(
+        this.dx,
+        this.dy,
+        this.nowW,
+        this.nowH
+      );
+      this.canvasHelper.width = this.nowW;
+      this.canvasHelper.height = this.nowH;
+      this.ctxHelper.putImageData(newImage, 0, 0);
+      let image = new Image();
+      image.src = this.canvasHelper.toDataURL();
+      this.$refs.modal.result = image;
+      this.startImage = image;
     },
     showDisplay() {
       this.showData = true;

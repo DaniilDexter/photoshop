@@ -329,6 +329,7 @@ export default {
     flex-direction: row;
     column-gap: 20px;
     align-items: center;
+    justify-content: center;
   }
 
   &__input {
