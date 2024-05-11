@@ -74,10 +74,9 @@
         v-if="showFilterModal"
       />
     </div>
-    <div style="display: block">
+    <div style="display: none">
       <canvas ref="canvasHelper" />
     </div>
-    <div>W:{{ nowW }} H:{{ nowH }} dx:{{ dx }} dy:{{ dy }}</div>
     <UploadModal
       v-show="showUploadModal"
       @show="changeUploadModal"

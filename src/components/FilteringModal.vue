@@ -1,7 +1,7 @@
 <template>
   <div class="modal">
     <div class="modal__container header">
-      <p class="header__text">Определение цвета пикселя</p>
+      <p class="header__text">Фильтрация</p>
       <button class="header__button" @click="$emit('show')">X</button>
     </div>
     <div class="modal__line">
