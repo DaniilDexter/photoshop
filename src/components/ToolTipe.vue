@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <div class="tooltipe" @mouseover="showTooltipe" @mouseout="showTooltipe">
       ?
     </div>
@@ -28,6 +28,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.container{
+  position: relative;
+}
 .tooltipe {
   text-decoration: underline;
   cursor: pointer;
@@ -35,6 +38,7 @@ export default {
 
   &__text {
     position: absolute;
+    right: 0;
     width: 370px;
     padding: 20px;
     background-color: #0d1b2a;

@@ -35,7 +35,7 @@
         </label>
       </div>
       <div class="modal__container">
-        <p>Разрешение сейчас: {{ resNow }} MP</p>
+        <p>Разрешение до: {{ resNow }} MP</p>
         <p>Разрешение после: {{ resAfter }} MP</p>
       </div>
       <label>

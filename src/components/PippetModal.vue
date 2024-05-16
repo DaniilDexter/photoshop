@@ -13,7 +13,12 @@
       </div>
     </div>
     <div class="modal__line">
-      <p>X</p>
+      <div class="modal__element">
+        <p class="modal__heading">X1</p>
+      </div>
+      <div class="modal__element">
+        <p class="modal__heading">X2</p>
+      </div>
     </div>
     <div class="modal__line">
       <div class="modal__element">
@@ -24,7 +29,12 @@
       </div>
     </div>
     <div class="modal__line">
-      <p>Y</p>
+      <div class="modal__element">
+        <p class="modal__heading">Y1</p>
+      </div>
+      <div class="modal__element">
+        <p class="modal__heading">Y2</p>
+      </div>
     </div>
     <div class="modal__line">
       <div class="modal__element">
@@ -35,7 +45,24 @@
       </div>
     </div>
     <div class="modal__line">
-      <p>XYZ</p>
+      <div class="modal__element">
+        <p
+          class="modal__heading"
+          title="В модели CIE 1931 Y - это яркость, Z почти равно синему (в CIE RGB), а X представляет собой 
+          сочетание трех кривых CIE RGB, выбранных неотрицательными"
+        >
+          XYZ1
+        </p>
+      </div>
+      <div class="modal__element">
+        <p
+          class="modal__heading"
+          title="В модели CIE 1931 Y - это яркость, Z почти равно синему (в CIE RGB), а X представляет собой 
+          сочетание трех кривых CIE RGB, выбранных неотрицательными"
+        >
+          XYZ2
+        </p>
+      </div>
     </div>
     <div class="modal__line">
       <div class="modal__element">
@@ -46,7 +73,22 @@
       </div>
     </div>
     <div class="modal__line">
-      <p>RGB</p>
+      <div class="modal__element">
+        <p
+          class="modal__heading"
+          title="Цветовое пространство RGB (Red, Green, Blue)"
+        >
+          RGB1
+        </p>
+      </div>
+      <div class="modal__element">
+        <p
+          class="modal__heading"
+          title="Цветовое пространство RGB (Red, Green, Blue)"
+        >
+          RGB2
+        </p>
+      </div>
     </div>
     <div class="modal__line">
       <div class="modal__element">
@@ -57,7 +99,14 @@
       </div>
     </div>
     <div class="modal__line">
-      <p>Lab</p>
+      <div class="modal__element">
+        <p class="modal__heading" title="Значения цвета в LAB задаются через светлоту (Lightness) и две координаты, отвечающие за хроматическую
+         составляющую: тон и насыщенность.A — положение цвета в диапазоне от зелёного до красного, B — от синего до жёлтого.">Lab1</p>
+      </div>
+      <div class="modal__element">
+        <p class="modal__heading" title="Значения цвета в LAB задаются через светлоту (Lightness) и две координаты, отвечающие за хроматическую
+         составляющую: тон и насыщенность.A — положение цвета в диапазоне от зелёного до красного, B — от синего до жёлтого.">Lab2</p>
+      </div>
     </div>
     <div class="modal__line">
       <div class="modal__element">
@@ -68,7 +117,9 @@
       </div>
     </div>
     <div class="modal__line" v-if="contrastRatio">
-      <p :style="{ color: contrastRatio < 4.5 ? 'red' : 'black' }">Contrast {{ contrastRatio }}:1</p>
+      <p :style="{ color: contrastRatio < 4.5 ? 'red' : 'black' }">
+        Contrast {{ contrastRatio }}:1
+      </p>
     </div>
   </div>
 </template>
@@ -82,6 +133,7 @@ export default {
     nowW: Number,
     nowH: Number,
   },
+  components: {},
   data() {
     return {
       rgb: [],
@@ -229,8 +281,10 @@ export default {
 
         const contrastRatio = (maxLuminance + 0.05) / (minLuminance + 0.05);
 
-        return Math.round(contrastRatio * 10)/10
-      }else {return 0}
+        return Math.round(contrastRatio * 10) / 10;
+      } else {
+        return 0;
+      }
     },
     coords() {
       if (
@@ -283,6 +337,11 @@ export default {
   &__element {
     width: 100%;
     text-align: center;
+  }
+
+  &__heading {
+    margin-top: 7px;
+    font-weight: 600;
   }
 }
 

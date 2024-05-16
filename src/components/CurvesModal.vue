@@ -10,11 +10,11 @@
           X1:
           <input
             type="number"
-            :disabled="prewiev"
             v-model="x1"
             class="modal__input"
             min="0"
             max="254"
+            @change="changeX1"
           />
         </label>
       </div>
@@ -23,11 +23,11 @@
           Y1:
           <input
             type="number"
-            :disabled="prewiev"
             v-model="y1"
             class="modal__input"
             min="1"
             max="255"
+            @change="changeY1"
           />
         </label>
       </div>
@@ -38,11 +38,11 @@
           X2:
           <input
             type="number"
-            :disabled="prewiev"
             v-model="x2"
             class="modal__input"
             min="0"
             max="254"
+            @change="changeX2"
           />
         </label>
       </div>
@@ -51,11 +51,11 @@
           Y2:
           <input
             type="number"
-            :disabled="prewiev"
             v-model="y2"
             class="modal__input"
             min="1"
             max="255"
+            @change="changeY2"
           />
         </label>
       </div>
@@ -71,7 +71,7 @@
         <button class="button" @click="correctImage(), $emit('apply')">Применить</button>
       </div>
       <div class="modal__element">
-        <button class="button" :disabled="prewiev" @click="reset">Сброс</button>
+        <button class="button" @click="reset">Сброс</button>
       </div>
     </div>
     <div class="modal__line">
@@ -108,11 +108,39 @@ export default {
     this.chartRef = this.$refs.chart;
   },
   methods: {
+    changeX1(){
+      if (this.prewiev){
+        this.correctImage();
+        this.calculate();
+      }
+    },
+    changeY1(){
+      if (this.prewiev){
+        this.correctImage();
+        this.calculate();
+      }
+    },
+    changeX2(){
+      if (this.prewiev){
+        this.correctImage();
+        this.calculate();
+      }
+    },
+    changeY2(){
+      if (this.prewiev){
+        this.correctImage();
+        this.calculate();
+      }
+    },
     reset(){
       this.x1 = 0
       this.x2 = 255
       this.y1 = 0
       this.y2 = 255
+      if (this.prewiev){
+        this.correctImage();
+        this.calculate();
+      }
     },
     normalizeHistogram(histogram) {
       const max = Math.max(...histogram);

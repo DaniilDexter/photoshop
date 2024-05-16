@@ -12,21 +12,18 @@
             type="number"
             @change="changeX1"
             v-model="x1"
-            :disabled="prewiev"
           />
           <input
             class="matrix__input"
             type="number"
             @change="changeX2"
             v-model="x2"
-            :disabled="prewiev"
           />
           <input
             class="matrix__input"
             type="number"
             @change="changeX3"
             v-model="x3"
-            :disabled="prewiev"
           />
         </div>
         <div class="matrix__line">
@@ -35,21 +32,18 @@
             type="number"
             @change="changeX4"
             v-model="x4"
-            :disabled="prewiev"
           />
           <input
             class="matrix__input"
             type="number"
             @change="changeX5"
             v-model="x5"
-            :disabled="prewiev"
           />
           <input
             class="matrix__input"
             type="number"
             @change="changeX6"
             v-model="x6"
-            :disabled="prewiev"
           />
         </div>
         <div class="matrix__line">
@@ -58,39 +52,36 @@
             type="number"
             @change="changeX7"
             v-model="x7"
-            :disabled="prewiev"
           />
           <input
             class="matrix__input"
             type="number"
             @change="changeX8"
             v-model="x8"
-            :disabled="prewiev"
           />
           <input
             class="matrix__input"
             type="number"
             @change="changeX9"
             v-model="x9"
-            :disabled="prewiev"
           />
         </div>
       </div>
       <div class="modal__element type">
         <label class="modal__label">
-          <input type="radio" name="" value="same" v-model="type"  :disabled="prewiev"/>
+          <input type="radio" name="type" value="same" v-model="type"  />
           Тождественное отображение
         </label>
         <label class="modal__label">
-          <input type="radio" name="" value="sharp" v-model="type"  :disabled="prewiev"/>
+          <input type="radio" name="type" value="sharp" v-model="type"  />
           Повышение резкости
         </label>
         <label class="modal__label">
-          <input type="radio" name="" value="gaus" v-model="type"  :disabled="prewiev"/>
+          <input type="radio" name="type" value="gaus" v-model="type"  />
           Фильтр Гаусса (3 на 3)
         </label>
         <label class="modal__label">
-          <input type="radio" name="" value="rect" v-model="type"  :disabled="prewiev"/>
+          <input type="radio" name="type" value="rect" v-model="type"  />
           Прямоугольное размытие
         </label>
       </div>
@@ -106,7 +97,7 @@
         <button class="modal__button" @click="filter(), $emit('apply')">Применить</button>
       </div>
       <div class="modal__element">
-        <button class="modal__button" @click="reset" :disabled="prewiev">Сбросить</button>
+        <button class="modal__button" @click="reset">Сбросить</button>
       </div>
     </div>
   </div>
@@ -146,41 +137,77 @@ export default {
     changeX1() {
       this.kernel[0][0] = this.x1;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     changeX2() {
       this.kernel[0][1] = this.x2;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     changeX3() {
       this.kernel[0][2] = this.x3;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     changeX4() {
       this.kernel[1][0] = this.x4;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     changeX5() {
       this.kernel[1][1] = this.x5;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     changeX6() {
       this.kernel[1][2] = this.x6;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     changeX7() {
       this.kernel[2][0] = this.x7;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     changeX8() {
       this.kernel[2][1] = this.x8;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     changeX9() {
       this.kernel[2][2] = this.x9;
       this.type = "";
+      if (this.prewiev){
+        this.filter()
+      }
     },
     reset(){
       this.type = "same"
+      if (this.prewiev){
+        this.ctxRef.drawImage(
+          this.startImage,
+          this.dx,
+          this.dy,
+          this.nowW,
+          this.nowH
+        );
+      }
     },
     applyPrewiev() {
       if (this.prewiev) {
@@ -302,6 +329,9 @@ export default {
           [1, 1, 1],
           [1, 1, 1],
         ];
+      }
+      if (this.prewiev){
+        this.filter()
       }
     },
     kernel: function (value) {
