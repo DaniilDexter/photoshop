@@ -14,44 +14,12 @@
     </div>
     <div class="modal__line">
       <div class="modal__element">
-        <p class="modal__heading">X1</p>
-      </div>
-      <div class="modal__element">
-        <p class="modal__heading">X2</p>
-      </div>
-    </div>
-    <div class="modal__line">
-      <div class="modal__element">
-        <p>{{ X1 }}</p>
-      </div>
-      <div class="modal__element">
-        <p>{{ X2 }}</p>
-      </div>
-    </div>
-    <div class="modal__line">
-      <div class="modal__element">
-        <p class="modal__heading">Y1</p>
-      </div>
-      <div class="modal__element">
-        <p class="modal__heading">Y2</p>
-      </div>
-    </div>
-    <div class="modal__line">
-      <div class="modal__element">
-        <p>{{ Y1 }}</p>
-      </div>
-      <div class="modal__element">
-        <p>{{ Y2 }}</p>
-      </div>
-    </div>
-    <div class="modal__line">
-      <div class="modal__element">
         <p
           class="modal__heading"
           title="В модели CIE 1931 Y - это яркость, Z почти равно синему (в CIE RGB), а X представляет собой 
           сочетание трех кривых CIE RGB, выбранных неотрицательными"
         >
-          XYZ1
+          XYZ
         </p>
       </div>
       <div class="modal__element">
@@ -60,7 +28,7 @@
           title="В модели CIE 1931 Y - это яркость, Z почти равно синему (в CIE RGB), а X представляет собой 
           сочетание трех кривых CIE RGB, выбранных неотрицательными"
         >
-          XYZ2
+          XYZ
         </p>
       </div>
     </div>
@@ -78,7 +46,7 @@
           class="modal__heading"
           title="Цветовое пространство RGB (Red, Green, Blue)"
         >
-          RGB1
+          RGB
         </p>
       </div>
       <div class="modal__element">
@@ -86,7 +54,7 @@
           class="modal__heading"
           title="Цветовое пространство RGB (Red, Green, Blue)"
         >
-          RGB2
+          RGB
         </p>
       </div>
     </div>
@@ -101,11 +69,11 @@
     <div class="modal__line">
       <div class="modal__element">
         <p class="modal__heading" title="Значения цвета в LAB задаются через светлоту (Lightness) и две координаты, отвечающие за хроматическую
-         составляющую: тон и насыщенность.A — положение цвета в диапазоне от зелёного до красного, B — от синего до жёлтого.">Lab1</p>
+         составляющую: тон и насыщенность.A — положение цвета в диапазоне от зелёного до красного, B — от синего до жёлтого.">Lab</p>
       </div>
       <div class="modal__element">
         <p class="modal__heading" title="Значения цвета в LAB задаются через светлоту (Lightness) и две координаты, отвечающие за хроматическую
-         составляющую: тон и насыщенность.A — положение цвета в диапазоне от зелёного до красного, B — от синего до жёлтого.">Lab2</p>
+         составляющую: тон и насыщенность.A — положение цвета в диапазоне от зелёного до красного, B — от синего до жёлтого.">Lab</p>
       </div>
     </div>
     <div class="modal__line">
@@ -114,6 +82,38 @@
       </div>
       <div class="modal__element">
         <p>{{ Lab2 }}</p>
+      </div>
+    </div>
+    <div class="modal__line">
+      <div class="modal__element">
+        <p class="modal__heading">X</p>
+      </div>
+      <div class="modal__element">
+        <p class="modal__heading">X</p>
+      </div>
+    </div>
+    <div class="modal__line">
+      <div class="modal__element">
+        <p>{{ X1 }}</p>
+      </div>
+      <div class="modal__element">
+        <p>{{ X2 }}</p>
+      </div>
+    </div>
+    <div class="modal__line">
+      <div class="modal__element">
+        <p class="modal__heading">Y</p>
+      </div>
+      <div class="modal__element">
+        <p class="modal__heading">Y</p>
+      </div>
+    </div>
+    <div class="modal__line">
+      <div class="modal__element">
+        <p>{{ Y1 }}</p>
+      </div>
+      <div class="modal__element">
+        <p>{{ Y2 }}</p>
       </div>
     </div>
     <div class="modal__line" v-if="contrastRatio">

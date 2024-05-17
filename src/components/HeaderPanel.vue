@@ -12,10 +12,10 @@
     <button class="button" :disabled="!startImage" @click="$emit('scale')" title="Resize your image">
       <img class="button__img" src="@/assets/scale-up.svg" alt="">
     </button>
-    <button class="button" :disabled="!startImage" :class="{ active: isCurves}" @click="$emit('curve')" title="Save your image">
+    <button class="button" :disabled="!startImage" :class="{ active: isCurves}" @click="$emit('curve')" title="Curves">
       <img class="button__img" src="@/assets/curve.svg" alt="">
     </button>
-    <button class="button" :disabled="!startImage" :class="{ active: isFiltering}" @click="$emit('filtering')" title="Save your image">
+    <button class="button" :disabled="!startImage" :class="{ active: isFiltering}" @click="$emit('filtering')" title="Filtering">
       <img class="button__img" src="@/assets/filtering.svg" alt="">
     </button>
     <button class="button" :disabled="!startImage" @click="$emit('save')" title="Save your image">
