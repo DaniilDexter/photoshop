@@ -3,7 +3,7 @@
     <button class="button" @click="$emit('show')" title="Upload your image!">
       <img class="button__img" src="@/assets/download-photo-svgrepo-com.svg" alt="">
     </button>
-    <button class="button" :disabled="!startImage" :class="{ active: isPippet}" @click="$emit('pippet')" title="Color picker">
+    <button class="button" :disabled="!startImage" :class="{ active: isPippet}" @click="$emit('pippet')" title="Color picker. To select the second color, click with Alt pressed.">
       <img class="button__img" src="@/assets/pipette.svg" alt="">
     </button>
     <button class="button" :disabled="!startImage" :class="{ active: isGrab}" @click="$emit('grab')" title="Grab your image">

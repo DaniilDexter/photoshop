@@ -241,6 +241,18 @@ export default {
         } else {
           this.dy += delta * 6;
         }
+        if (this.dx + 20 > this.canvas.width) {
+          this.dx = this.canvas.width - 20;
+        }
+        if (this.dy + 20 > this.canvas.height) {
+          this.dy = this.canvas.height - 20;
+        }
+        if (this.dx + this.nowW < 20) {
+          this.dx = -this.nowW + 20;
+        }
+        if (this.dy + this.nowH < 20) {
+          this.dy = -this.nowH + 20;
+        }
         this.moveImage();
       }
     },

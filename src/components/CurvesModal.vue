@@ -74,7 +74,7 @@
         <button class="button" @click="reset">Сброс</button>
       </div>
     </div>
-    <div class="modal__line">
+    <div class="modal__line chart">
       <canvas id="chart" width="200" height="200" ref="chart"></canvas>
     </div>
   </div>
@@ -234,7 +234,7 @@ export default {
       }
 
       this.chartInstance = new Chart(ctx, {
-        type: "line", //scatter
+        type: "scatter",
         data: {
           labels: Array.from({ length: 256 }, (_, i) => i),
           datasets: [
@@ -264,15 +264,33 @@ export default {
               borderColor: "rgba(0,0,0,1)",
               borderWidth: 1,
               fill: false,
+              showLine: true,
             },
           ],
         },
         options: {
           animation: false,
+          aspectRatio: 1,
           scales: {
+            x: {
+              type: "linear",
+              position: "bottom",
+              min: 0,
+              max: 260,
+              ticks: {
+                stepSize: 7,
+                color: 'black',
+              },
+            },
             y: {
               beginAtZero: true,
-            },
+              min: 0,
+              max: 260,
+              ticks: {
+                stepSize: 7,
+                color: 'black',
+              },
+            }
           },
         },
       });
@@ -321,6 +339,12 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.chart{
+  padding: 5px;
+  background-color: white;
+  border-radius: 10px;
+  border: #32373d solid 1px;
+}
 .modal {
   position: absolute;
   top: 12px;
